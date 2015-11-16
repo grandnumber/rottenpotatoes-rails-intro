@@ -11,20 +11,33 @@ class MoviesController < ApplicationController
   end
 
   def index
-  @all_ratings = Movie.all_ratings
-  (params[:ratings].present?) ? @check_box=params[:ratings].keys :  @check_box = @all_ratings
-  @movies_pre = Movie.all.where(:rating => @check_box)
-    order = params[:sort]
-    if order == "movie"
-       @movies = @movies_pre.order(:title)
-       @movie_toggle="hilite"
-     elsif
-       order =="release"
-       @movies =@movies_pre.order(:release_date)
-       @release_toggle="hilite"
+
+    if (params[:sort_by].blank? && params[:ratings].blank? && ! session[:sort_by].blank?)
+      flash.keep
+      redirect_to :sort_by => session[:sort_by], :ratings => session[:ratings]
+    end
+
+    if params[:sort_by]
+      @sort_by = params[:sort_by].to_sym
+    elsif session[:sort_by]
+      @sort_by = session[:sort_by].to_sym
+    else
+      @sort_by = 'id'
+    end
+
+    @all_ratings = Movie.all_ratings
+    if params[:ratings]
+       @selected_ratings = params[:ratings].keys
+     elsif session[:ratings]
+       @selected_ratings = session[:ratings]
      else
-      @movies = @movies_pre
-      end
+         @selected_ratings = @all_ratings
+    end
+    session[:ratings] =  @selected_ratings
+    session[:sort_by] = @sort_by
+    params[:sort_by] == 'title' ? @movie_toggle="hilite" : @movie_toggle=""
+    params[:sort_by] == 'release_date' ? @release_toggle="hilite" : @release_toggle=""
+    @movies = Movie.where(:rating => @selected_ratings).order(@sort_by)
   end
 
   def new
