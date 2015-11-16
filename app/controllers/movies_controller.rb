@@ -11,8 +11,7 @@ class MoviesController < ApplicationController
   end
 
   def index
-    @movie_toggle=""
-    @release_toggle=""
+    @movie_toggle, @release_toggle=""
    order = params[:sort]
     if order == "movie"
      @movies = Movie.order(:title)
@@ -20,7 +19,7 @@ class MoviesController < ApplicationController
      @release_toggle=""
    elsif
      order =="release"
-     @movies =Movie.order( :release_date)
+     @movies =Movie.order(:release_date)
      @movie_toggle=""
      @release_toggle="hilite"
    else
