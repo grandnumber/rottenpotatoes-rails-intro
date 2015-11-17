@@ -26,7 +26,7 @@ class MoviesController < ApplicationController
     end
 
     @all_ratings = Movie.all_ratings
-    if params[:ratings]
+    if params[:ratings].respond_to?('keys')
        @selected_ratings = params[:ratings].keys
      elsif session[:ratings]
        @selected_ratings = session[:ratings]
